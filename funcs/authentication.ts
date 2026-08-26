@@ -30,7 +30,8 @@ export function authenticate<TJwtPayload>(options: TAuthenticateOptions): Reques
     const authToken = options.mode === 'cookie' ? req.cookies?.[options.tokenCookieName] : req.headers?.[options.headerName?.toLowerCase()];
 
     if (!authToken || typeof authToken !== 'string') {
-      return res.status(401).json({ error: 'Auth token not found' });
+      res.status(401).json({ error: 'Auth token not found' });
+      return;
     }
 
     const { status, payload } = validateToken<TJwtPayload>(authToken, options.secret);
@@ -39,14 +40,16 @@ export function authenticate<TJwtPayload>(options: TAuthenticateOptions): Reques
       if (options.mode === 'cookie') {
         res.clearCookie(options.tokenCookieName);
       }
-      return res.status(401).json({ error: 'Auth token expired' });
+      res.status(401).json({ error: 'Auth token expired' });
+      return;
     }
 
     if (status === 'INVALID') {
       if (options.mode === 'cookie') {
         res.clearCookie(options.tokenCookieName);
       }
-      return res.status(401).json({ error: 'Invalid auth token' });
+      res.status(401).json({ error: 'Invalid auth token' });
+      return;
     }
 
     // req.user = payload as TJwtPayload;
