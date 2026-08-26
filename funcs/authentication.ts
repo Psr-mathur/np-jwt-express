@@ -7,7 +7,7 @@
 //   }
 // }
 
-import { NextFunction, Request, RequestHandler, Response } from 'express-serve-static-core';
+import { Request, RequestHandler } from 'express';
 import { validateToken } from './token';
 
 export type TAuthenticateOptions = {
