@@ -7,7 +7,7 @@
 //   }
 // }
 
-import { NextFunction, Request, Response } from 'express-serve-static-core';
+import { NextFunction, Request, RequestHandler, Response } from 'express-serve-static-core';
 import { validateToken } from './token';
 
 export type TAuthenticateOptions = {
@@ -25,9 +25,9 @@ export type TAuthenticateOptions = {
  * @param options - options for authenticating the request
  * @returns a middleware function that authenticates the request and sets the user property on the request object if the authentication is successful
  */
-export function authenticate<TJwtPayload>(options: TAuthenticateOptions) {
-  return function (req: Request, res: Response, next: NextFunction) {
-    const authToken = options.mode === 'cookie' ? req.cookies[options.tokenCookieName] : req.headers[options.headerName];
+export function authenticate<TJwtPayload>(options: TAuthenticateOptions): RequestHandler {
+  return function (req, res, next) {
+    const authToken = options.mode === 'cookie' ? req.cookies?.[options.tokenCookieName] : req.headers?.[options.headerName?.toLowerCase()];
 
     if (!authToken || typeof authToken !== 'string') {
       return res.status(401).json({ error: 'Auth token not found' });
